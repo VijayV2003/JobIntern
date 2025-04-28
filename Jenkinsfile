@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')  // Replace with your Jenkins credentials ID
-        IMAGE_FRONTEND = "01sudharsan/sihfrontend-app"     // Frontend Docker Hub image name
-        IMAGE_BACKEND = "01sudharsan/sihbackend-app"       // Backend Docker Hub image name
+        IMAGE_FRONTEND = "vijay/sihfrontend-app"     // Frontend Docker Hub image name
+        IMAGE_BACKEND = "vijay/sihbackend-app"       // Backend Docker Hub image name
         IMAGE_TAG = "${env.BUILD_NUMBER}"                  // Tagging with Jenkins build number, can also use "latest"
     }
 
