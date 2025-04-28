@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    image: 01sudharsan/sihfrontend-app:latest
+    image: vijayv2003/sihfrontend-app:latest
     container_name: frontend
     ports:
       - "3000:3000"
@@ -11,7 +11,7 @@ services:
       - backend
 
   backend:
-    image: 01sudharsan/sihbackend-app:latest
+    image: vijayv2003/sihbackend-app:latest
     container_name: backend
     ports:
       - "8000:8000"
