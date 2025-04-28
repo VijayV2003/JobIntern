@@ -1,62 +1,24 @@
 pipeline {
     agent any
-
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')  // Jenkins DockerHub credentials ID
-        IMAGE_FRONTEND = "vijayv2003/sihfrontend-app"
-        IMAGE_BACKEND = "vijayv2003/sihbackend-app"
-        IMAGE_TAG = "latest"
+        DOCKER_CREDENTIALS = credentials('dockerhub')
     }
-
     stages {
-        stage('Checkout Code') {
+        stage('Build Docker Image') {
             steps {
-                echo "Checking out the source code..."
-                checkout scm
+                script {
+                    docker.build("vijayv2003/sihfrontend-app:latest", "./frontend")
+                }
             }
         }
-
-        stage('Build Docker Images') {
+        stage('Push Docker Image') {
             steps {
-                echo "Building frontend and backend Docker images..."
-                sh "docker build -t ${IMAGE_FRONTEND}:${IMAGE_TAG} ./frontend"
-                sh "docker build -t ${IMAGE_BACKEND}:${IMAGE_TAG} ./backend"
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+                        docker.image("vijayv2003/sihfrontend-app:latest").push()
+                    }
+                }
             }
-        }
-
-        stage('Docker Hub Login') {
-            steps {
-                echo "Logging into Docker Hub..."
-                sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
-            }
-        }
-
-        stage('Push Docker Images to Hub') {
-            steps {
-                echo "Pushing images to Docker Hub..."
-                sh "docker push ${IMAGE_FRONTEND}:${IMAGE_TAG}"
-                sh "docker push ${IMAGE_BACKEND}:${IMAGE_TAG}"
-            }
-        }
-
-        stage('Deploy using Docker Compose') {
-            steps {
-                echo "Deploying containers using docker-compose..."
-                sh '''
-                    docker-compose down || true
-                    docker-compose pull
-                    docker-compose up -d --remove-orphans
-                '''
-            }
-        }
-    }
-
-    post {
-        always {
-            echo "Cleanup..."
-            sh '''
-                docker logout
-            '''
         }
     }
 }
